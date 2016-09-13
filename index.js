@@ -1,0 +1,139 @@
+'use strict';
+
+const Jimp = require('jimp');
+
+// http://fileformats.wikia.com/wiki/Icon
+// the correct sizes are 256x256, 48x48, 32x32, 16x16
+const sizeList = [256, 48, 32, 16];
+
+module.exports = function pngToIco(filepath) {
+	return Jimp.read(filepath).then(function genSizes(image) {
+		const bitmap = image.bitmap;
+		const size = bitmap.width;
+		if (size !== bitmap.height ||
+			sizeList.indexOf(size) === -1) {
+			throw new Error('Please give me an png image of 256x256 pixels.');
+		}
+
+		const resizedImages = sizeList
+			.slice(sizeList.indexOf(size) + 1)
+			.map(function mapSizes(targetSize) {
+				return image.clone().resize(targetSize, targetSize, Jimp.RESIZE_BICUBIC);
+			});
+
+		return Promise.all(resizedImages.concat(image));
+	}).then(imagesToIco);
+}
+
+// https://en.wikipedia.org/wiki/ICO_(file_format)
+function imagesToIco(images) {
+	const header = getHeader(images.length);
+	const arr = [header];
+
+	let len = header.length;
+	let offset = 6 + (16 * images.length);
+
+	images.forEach(img => {
+		const dir = getDir(img, offset);
+		arr.push(dir);
+		len += dir.length;
+		offset += img.bitmap.data.length + 40;
+	});
+
+	images.forEach(img => {
+		const bmpHeader = getBmpHeader(img);
+		const dib = getDib(img);
+		arr.push(bmpHeader, dib);
+		len += bmpHeader.length + dib.length;
+	});
+
+	return Buffer.concat(arr, len);
+}
+
+function getHeader(numOfImages) {
+	const buf = Buffer.alloc(6);
+
+	buf.writeUInt16LE(0, 0); // Reserved. Must always be 0.
+	buf.writeUInt16LE(1, 2); // Specifies image type: 1 for icon (.ICO) image
+	buf.writeUInt16LE(numOfImages, 4); // Specifies number of images in the file.
+
+	return buf;
+}
+
+function getDir(img, offset) {
+	const buf = Buffer.alloc(16);
+	const bitmap = img.bitmap;
+	const size = bitmap.data.length + 40;
+	const width = bitmap.width <= 256 ? 0 : bitmap.width;
+	const height = width;
+	const bpp = 32;
+
+	buf.writeUInt8(width, 0); // Specifies image width in pixels.
+	buf.writeUInt8(height, 1); // Specifies image height in pixels.
+	buf.writeUInt8(0, 2); // Should be 0 if the image does not use a color palette.
+	buf.writeUInt8(0, 3); // Reserved. Should be 0.
+	buf.writeUInt16LE(0, 4); // Specifies color planes. Should be 0 or 1.
+	buf.writeUInt16LE(bpp, 6); // Specifies bits per pixel.
+	buf.writeUInt32LE(size, 8); // Specifies the size of the image's data in bytes
+	buf.writeUInt32LE(offset, 12); // Specifies the offset of BMP or PNG data from the beginning of the ICO/CUR file
+
+	return buf;
+}
+
+// https://en.wikipedia.org/wiki/BMP_file_format
+function getBmpHeader(img) {
+	const buf = Buffer.alloc(40);
+	const bitmap = img.bitmap;
+	const size = bitmap.data.length;
+	const width = bitmap.width;
+	const height = width;
+	const bpp = 32;
+
+	buf.writeUInt32LE(40, 0); // the size of this header (40 bytes)
+	buf.writeInt32LE(width, 4); // the bitmap width in pixels (signed integer)
+	// https://en.wikipedia.org/wiki/ICO_(file_format)
+	// ...Even if the AND mask is not supplied, if the image is in Windows BMP format, the BMP header must still specify a doubled height.
+	buf.writeInt32LE(height * 2, 8); // the bitmap height in pixels (signed integer)
+	buf.writeUInt16LE(1, 12); // the number of color planes (must be 1)
+	buf.writeUInt16LE(bpp, 14); // the number of bits per pixel
+	buf.writeUInt32LE(0, 16); // the compression method being used.
+	buf.writeUInt32LE(size, 20); // the image size.
+	buf.writeInt32LE(0, 24); // the horizontal resolution of the image. (signed integer)
+	buf.writeInt32LE(0, 28); // the horizontal resolution of the image. (signed integer)
+	buf.writeUInt32LE(0, 32); // the number of colors in the color palette, or 0 to default to 2n
+	buf.writeUInt32LE(0, 36); // 	the number of important colors used, or 0 when every color is important; generally ignored.
+
+	return buf;
+}
+
+// https://en.wikipedia.org/wiki/BMP_file_format
+// Note that the bitmap data starts with the lower left hand corner of the image.
+// blue green red alpha in order
+function getDib(img) {
+	const bitmap = img.bitmap;
+	const size = bitmap.data.length;
+	const buf = Buffer.alloc(size);
+	const width = bitmap.width;
+	const height = width;
+	const lowerLeftPos = (height - 1) * width * 4;
+
+	for (let x = 0; x < width; x++) {
+		for (let y = 0; y < height; y++) {
+			const pxColor = img.getPixelColor(x, y);
+
+			const r = pxColor >> 24;
+			const g = pxColor >> 16 & 255;
+			const b = pxColor >> 8 & 255;
+			const a = pxColor & 255;
+
+			const bmpPos = lowerLeftPos - y * width * 4 + x * 4;
+
+			buf.writeUInt8(b, bmpPos);
+			buf.writeUInt8(g, bmpPos + 1);
+			buf.writeUInt8(r, bmpPos + 2);
+			buf.writeUInt8(a, bmpPos + 3);
+		}
+	}
+
+	return buf;
+}
