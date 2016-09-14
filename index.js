@@ -10,46 +10,48 @@ module.exports = function pngToIco(filepath) {
 	return Jimp.read(filepath).then(function genSizes(image) {
 		const bitmap = image.bitmap;
 		const size = bitmap.width;
-		if (size !== bitmap.height ||
-			sizeList.indexOf(size) === -1) {
+		if (image._originalMime !== Jimp.MIME_PNG ||
+			size !== bitmap.height) {
 			throw new Error('Please give me an png image of 256x256 pixels.');
+		}
+		if (size !== 256) {
+			image.resize(256, 256, Jimp.RESIZE_BICUBIC);
 		}
 
 		const resizedImages = sizeList
-			.slice(sizeList.indexOf(size) + 1)
+			.slice(1)
 			.map(function mapSizes(targetSize) {
 				return image.clone().resize(targetSize, targetSize, Jimp.RESIZE_BICUBIC);
 			});
 
 		return Promise.all(resizedImages.concat(image));
 	}).then(imagesToIco);
-}
+};
 
-// https://en.wikipedia.org/wiki/ICO_(file_format)
 function imagesToIco(images) {
 	const header = getHeader(images.length);
-	const arr = [header];
+	const headerAndIconDir = [header];
+	const imageDataArr = [];
 
 	let len = header.length;
-	let offset = 6 + (16 * images.length);
+	let offset = header.length + (16 * images.length);
 
 	images.forEach(img => {
 		const dir = getDir(img, offset);
-		arr.push(dir);
-		len += dir.length;
-		offset += img.bitmap.data.length + 40;
-	});
-
-	images.forEach(img => {
-		const bmpHeader = getBmpHeader(img);
+		const bmpInfoHeader = getBmpInfoHeader(img, 0);
 		const dib = getDib(img);
-		arr.push(bmpHeader, dib);
-		len += bmpHeader.length + dib.length;
+
+		headerAndIconDir.push(dir);
+		imageDataArr.push(bmpInfoHeader, dib);
+
+		len += dir.length + bmpInfoHeader.length + dib.length;
+		offset += bmpInfoHeader.length + dib.length;
 	});
 
-	return Buffer.concat(arr, len);
+	return Buffer.concat(headerAndIconDir.concat(imageDataArr), len);
 }
 
+// https://en.wikipedia.org/wiki/ICO_(file_format)
 function getHeader(numOfImages) {
 	const buf = Buffer.alloc(6);
 
@@ -64,7 +66,7 @@ function getDir(img, offset) {
 	const buf = Buffer.alloc(16);
 	const bitmap = img.bitmap;
 	const size = bitmap.data.length + 40;
-	const width = bitmap.width <= 256 ? 0 : bitmap.width;
+	const width = bitmap.width >= 256 ? 0 : bitmap.width;
 	const height = width;
 	const bpp = 32;
 
@@ -81,22 +83,24 @@ function getDir(img, offset) {
 }
 
 // https://en.wikipedia.org/wiki/BMP_file_format
-function getBmpHeader(img) {
+function getBmpInfoHeader(img, compressionMode) {
 	const buf = Buffer.alloc(40);
 	const bitmap = img.bitmap;
 	const size = bitmap.data.length;
 	const width = bitmap.width;
-	const height = width;
+	// https://en.wikipedia.org/wiki/ICO_(file_format)
+	// ...Even if the AND mask is not supplied,
+	// if the image is in Windows BMP format,
+	// the BMP header must still specify a doubled height.
+	const height = compressionMode === 0 ? width * 2 : width;
 	const bpp = 32;
 
 	buf.writeUInt32LE(40, 0); // the size of this header (40 bytes)
 	buf.writeInt32LE(width, 4); // the bitmap width in pixels (signed integer)
-	// https://en.wikipedia.org/wiki/ICO_(file_format)
-	// ...Even if the AND mask is not supplied, if the image is in Windows BMP format, the BMP header must still specify a doubled height.
-	buf.writeInt32LE(height * 2, 8); // the bitmap height in pixels (signed integer)
+	buf.writeInt32LE(height, 8); // the bitmap height in pixels (signed integer)
 	buf.writeUInt16LE(1, 12); // the number of color planes (must be 1)
 	buf.writeUInt16LE(bpp, 14); // the number of bits per pixel
-	buf.writeUInt32LE(0, 16); // the compression method being used.
+	buf.writeUInt32LE(compressionMode, 16); // the compression method being used.
 	buf.writeUInt32LE(size, 20); // the image size.
 	buf.writeInt32LE(0, 24); // the horizontal resolution of the image. (signed integer)
 	buf.writeInt32LE(0, 28); // the horizontal resolution of the image. (signed integer)

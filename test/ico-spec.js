@@ -1,6 +1,5 @@
 'use strict';
 
-const fs = require('fs');
 const pngToIco = require('../');
 
 describe('should generate image', function () {
