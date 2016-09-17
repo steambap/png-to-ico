@@ -125,7 +125,7 @@ function getDib(img) {
 		for (let y = 0; y < height; y++) {
 			const pxColor = img.getPixelColor(x, y);
 
-			const r = pxColor >> 24;
+			const r = pxColor >> 24 & 255;
 			const g = pxColor >> 16 & 255;
 			const b = pxColor >> 8 & 255;
 			const a = pxColor & 255;
