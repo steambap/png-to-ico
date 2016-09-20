@@ -1,13 +1,13 @@
 'use strict';
-
+/* eslint-disable no-mixed-operators */
 const Jimp = require('jimp');
 
 // http://fileformats.wikia.com/wiki/Icon
 // the correct sizes are 256x256, 48x48, 32x32, 16x16
-const sizeList = [256, 48, 32, 16];
+const sizeList = [48, 32, 16];
 
 module.exports = function pngToIco(filepath) {
-	return Jimp.read(filepath).then(function genSizes(image) {
+	return Jimp.read(filepath).then(image => {
 		const bitmap = image.bitmap;
 		const size = bitmap.width;
 		if (image._originalMime !== Jimp.MIME_PNG ||
@@ -19,10 +19,9 @@ module.exports = function pngToIco(filepath) {
 		}
 
 		const resizedImages = sizeList
-			.slice(1)
-			.map(function mapSizes(targetSize) {
-				return image.clone().resize(targetSize, targetSize, Jimp.RESIZE_BICUBIC);
-			});
+			.map(targetSize =>
+				image.clone().resize(targetSize, targetSize, Jimp.RESIZE_BICUBIC)
+			);
 
 		return Promise.all(resizedImages.concat(image));
 	}).then(imagesToIco);

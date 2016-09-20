@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/steambap/png-to-ico.svg?branch=master)](https://travis-ci.org/steambap/png-to-ico)
 
-> png转ico
+> png 转 ico
 
 ## 简介
 ![image](assets/png-to-ico.gif)
