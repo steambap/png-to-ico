@@ -1,6 +1,6 @@
 {
   "name": "png-to-ico",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "convert png to windows ico format",
   "main": "index.js",
   "engines": {
@@ -10,8 +10,11 @@
     "png-to-ico": "bin/cli.js"
   },
   "files": [
-    "bin/*"
+    "bin/*",
+		"*.md",
+		"index.d.ts"
   ],
+	"typings": "index.d.ts",
   "scripts": {
     "test": "xo && mocha",
 		"mocha": "mocha",

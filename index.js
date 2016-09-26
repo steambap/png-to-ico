@@ -12,7 +12,9 @@ module.exports = function pngToIco(filepath) {
 		const size = bitmap.width;
 		if (image._originalMime !== Jimp.MIME_PNG ||
 			size !== bitmap.height) {
-			throw new Error('Please give me an png image of 256x256 pixels.');
+			const err = new Error('Please give me an png image of 256x256 pixels.');
+			err.code = 'ESIZE';
+			throw err;
 		}
 		if (size !== 256) {
 			image.resize(256, 256, Jimp.RESIZE_BICUBIC);
