@@ -11,7 +11,7 @@ const cli = meow(`
 		$ png-to-ico electron.png > electron.ico
 `);
 
-if (!cli.input.length && process.stdin.isTTY) {
+if (cli.input.length === 0 && process.stdin.isTTY) {
 	console.error('Please give me an png image of 256x256 pixels.');
 	process.exit(1);
 }

@@ -6,7 +6,7 @@ const Jimp = require('jimp');
 // the correct sizes are 256x256, 48x48, 32x32, 16x16
 const sizeList = [48, 32, 16];
 
-module.exports = function pngToIco(filepath) {
+module.exports = function (filepath) {
 	return Jimp.read(filepath).then(image => {
 		const bitmap = image.bitmap;
 		const size = bitmap.width;
