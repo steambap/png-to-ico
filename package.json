@@ -46,6 +46,9 @@
   },
 	"xo": {
 		"esnext": true,
-		"envs": ["mocha"]
+		"envs": ["mocha"],
+    "rules": {
+      "linebreak-style": ["error", "windows"]
+    }
 	}
 }
