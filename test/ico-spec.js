@@ -14,4 +14,8 @@ describe('should generate image', () => {
 	it('should work with sizes other than 256x256', () => {
 		return pngToIco('test/512x512.png');
 	});
+
+	it('should throw with jpeg image', done => {
+		pngToIco('test/jpeg.jpg').catch(() => done());
+	});
 });
