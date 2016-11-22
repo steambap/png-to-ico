@@ -1,24 +1,24 @@
 {
   "name": "png-to-ico",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "convert png to windows ico format",
   "main": "index.js",
   "engines": {
-    "node": ">=5"
+    "node": ">=4"
   },
   "bin": {
     "png-to-ico": "bin/cli.js"
   },
   "files": [
     "bin/*",
-		"*.md",
-		"index.d.ts"
+    "*.md",
+    "index.d.ts"
   ],
-	"typings": "index.d.ts",
+  "typings": "index.d.ts",
   "scripts": {
     "test": "xo && mocha",
-		"mocha": "mocha",
-		"lint": "xo"
+    "mocha": "mocha",
+    "lint": "xo"
   },
   "repository": {
     "type": "git",
@@ -42,10 +42,12 @@
   },
   "devDependencies": {
     "mocha": "^3.1.2",
-    "xo": "^0.17.0"
+    "xo": "^0.17.1"
   },
-	"xo": {
-		"esnext": true,
-		"envs": ["mocha"]
-	}
+  "xo": {
+    "esnext": true,
+    "envs": [
+      "mocha"
+    ]
+  }
 }

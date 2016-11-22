@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/steambap/png-to-ico.svg?branch=master)](https://travis-ci.org/steambap/png-to-ico)
 
-> png 转 ico
+> png 转 ico 格式
 
 ## 简介
 ![image](assets/png-to-ico.gif)
@@ -11,12 +11,12 @@
 > npm install --save-dev png-to-ico
 
 ## 使用方法
-在npm脚本中使用:
+在 npm script 脚本中使用:
 ```
 png-to-ico electron.png > app.ico
 ```
 
-在node程序中使用:
+在 node.js 程序中使用:
 ```JavaScript
 const fs = require('fs');
 const pngToIco = require('png-to-ico');
