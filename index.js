@@ -96,17 +96,17 @@ function getBmpInfoHeader(img, compressionMode) {
 	const height = compressionMode === 0 ? width * 2 : width;
 	const bpp = 32;
 
-	buf.writeUInt32LE(40, 0); // the size of this header (40 bytes)
-	buf.writeInt32LE(width, 4); // the bitmap width in pixels (signed integer)
-	buf.writeInt32LE(height, 8); // the bitmap height in pixels (signed integer)
-	buf.writeUInt16LE(1, 12); // the number of color planes (must be 1)
-	buf.writeUInt16LE(bpp, 14); // the number of bits per pixel
-	buf.writeUInt32LE(compressionMode, 16); // the compression method being used.
-	buf.writeUInt32LE(size, 20); // the image size.
-	buf.writeInt32LE(0, 24); // the horizontal resolution of the image. (signed integer)
-	buf.writeInt32LE(0, 28); // the horizontal resolution of the image. (signed integer)
-	buf.writeUInt32LE(0, 32); // the number of colors in the color palette, or 0 to default to 2n
-	buf.writeUInt32LE(0, 36); // 	the number of important colors used, or 0 when every color is important; generally ignored.
+	buf.writeUInt32LE(40, 0); // The size of this header (40 bytes)
+	buf.writeInt32LE(width, 4); // The bitmap width in pixels (signed integer)
+	buf.writeInt32LE(height, 8); // The bitmap height in pixels (signed integer)
+	buf.writeUInt16LE(1, 12); // The number of color planes (must be 1)
+	buf.writeUInt16LE(bpp, 14); // The number of bits per pixel
+	buf.writeUInt32LE(compressionMode, 16); // The compression method being used.
+	buf.writeUInt32LE(size, 20); // The image size.
+	buf.writeInt32LE(0, 24); // The horizontal resolution of the image. (signed integer)
+	buf.writeInt32LE(0, 28); // The horizontal resolution of the image. (signed integer)
+	buf.writeUInt32LE(0, 32); // The number of colors in the color palette, or 0 to default to 2n
+	buf.writeUInt32LE(0, 36); // 	The number of important colors used, or 0 when every color is important; generally ignored.
 
 	return buf;
 }
