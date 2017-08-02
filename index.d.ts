@@ -1,2 +1,4 @@
-export function pngToIco(filepath: string): Buffer;
-export function pngToIco(file: Buffer): Buffer;
+declare module 'png-to-ico' {
+  const constructor: (filename: string | Buffer) => Promise<Buffer>;
+  export = constructor
+}
