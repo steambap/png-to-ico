@@ -1,1 +1,1 @@
-[http://contributor-covenant.org/version/1/0/0/](http://contributor-covenant.org/version/1/0/0/)
+[https://contributor-covenant.org/version/1/4/](https://contributor-covenant.org/version/1/4/)
