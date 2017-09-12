@@ -42,3 +42,5 @@ In other words, png-to-ico is written purely in JavaScript, which is great for w
 
 ## license
 [MIT](LICENSE)
+
+<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/FLzmw59AcLD5CoLpsepmdZBE/steambap/png-to-ico'>  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/FLzmw59AcLD5CoLpsepmdZBE/steambap/png-to-ico.svg' /></a>
