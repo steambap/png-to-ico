@@ -7,26 +7,26 @@ const Jimp = require('jimp');
 const sizeList = [48, 32, 16];
 
 module.exports = function (filepath) {
-	return Jimp.read(filepath).then(image => {
-		const bitmap = image.bitmap;
-		const size = bitmap.width;
-		if (image._originalMime !== Jimp.MIME_PNG ||
-			size !== bitmap.height) {
-			const err = new Error('Please give me an png image of 256x256 pixels.');
-			err.code = 'ESIZE';
-			throw err;
-		}
-		if (size !== 256) {
-			image.resize(256, 256, Jimp.RESIZE_BICUBIC);
-		}
+	return Jimp.read(filepath)
+		.then(image => {
+			const bitmap = image.bitmap;
+			const size = bitmap.width;
+			if (image._originalMime !== Jimp.MIME_PNG || size !== bitmap.height) {
+				const err = new Error('Please give me an png image of 256x256 pixels.');
+				err.code = 'ESIZE';
+				throw err;
+			}
+			if (size !== 256) {
+				image.resize(256, 256, Jimp.RESIZE_BICUBIC);
+			}
 
-		const resizedImages = sizeList
-			.map(targetSize =>
+			const resizedImages = sizeList.map(targetSize =>
 				image.clone().resize(targetSize, targetSize, Jimp.RESIZE_BICUBIC)
 			);
 
-		return Promise.all(resizedImages.concat(image));
-	}).then(imagesToIco);
+			return Promise.all(resizedImages.concat(image));
+		})
+		.then(imagesToIco);
 };
 
 function imagesToIco(images) {
