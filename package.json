@@ -39,7 +39,7 @@
   "dependencies": {
     "@types/node": "^8.0.47",
     "jimp": "^0.2.28",
-    "meow": "^3.7.0"
+    "minimist": "^1.2.0"
   },
   "devDependencies": {
     "mocha": "^4.0.1",
