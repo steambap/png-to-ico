@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+"use strict";
 const minimist = require("minimist");
 const pkg = require("../package.json");
 const pngToIco = require("../");

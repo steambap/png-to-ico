@@ -1,21 +1,23 @@
 module.exports = {
   extends: ["eslint-config-alloy"],
-  globals: {
-    describe: false,
-    it: false
+  env: {
+    mocha: true
   },
   rules: {
     indent: [
       "error",
       2,
       {
-        SwitchCase: 1,
-        flatTernaryExpressions: true
+        SwitchCase: 1
       }
     ],
     quotes: [
       "error",
       "double"
+    ],
+    strict: [
+      "off",
+      "safe"
     ]
   }
 };
