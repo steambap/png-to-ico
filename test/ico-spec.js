@@ -17,4 +17,8 @@ describe("should generate image", () => {
   it("should throw with jpeg image", done => {
     pngToIco("test/jpeg.jpg").catch(() => done());
   });
+
+  it("should throw with invalid buffer", done => {
+    pngToIco(Buffer.from([0x62, 0x75])).catch(() => done());
+  });
 });
