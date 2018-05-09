@@ -1,6 +1,6 @@
 {
   "name": "png-to-ico",
-  "version": "1.0.7",
+  "version": "2.0.0",
   "description": "convert png to windows ico format",
   "main": "index.js",
   "engines": {
