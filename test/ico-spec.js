@@ -1,4 +1,3 @@
-"use strict";
 const pngToIco = require("../");
 
 describe("should generate image", () => {

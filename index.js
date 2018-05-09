@@ -1,4 +1,3 @@
-"use strict";
 /* eslint-disable no-mixed-operators */
 const Jimp = require("jimp");
 

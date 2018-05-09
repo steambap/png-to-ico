@@ -14,10 +14,6 @@ module.exports = {
     quotes: [
       "error",
       "double"
-    ],
-    strict: [
-      "off",
-      "safe"
     ]
   }
 };
