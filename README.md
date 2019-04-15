@@ -41,4 +41,4 @@ Based on [jimp](https://github.com/oliver-moran/jimp):
 In other words, png-to-ico is written purely in JavaScript, which is great for windows user.  
 
 ## license
-[MIT](LICENSE)
+[MIT](LICENSE) or [Anti-996](LICENSE-ANTI-996)
