@@ -38,7 +38,7 @@ function imagesToIco(images) {
 
   images.forEach(img => {
     const dir = getDir(img, offset);
-    const bmpInfoHeader = getBmpInfoHeader(img, 0);
+    const bmpInfoHeader = getBmpInfoHeader(img);
     const dib = getDib(img);
 
     headerAndIconDir.push(dir);
@@ -83,7 +83,7 @@ function getDir(img, offset) {
 }
 
 // https://en.wikipedia.org/wiki/BMP_file_format
-function getBmpInfoHeader(img, compressionMode) {
+function getBmpInfoHeader(img) {
   const buf = Buffer.alloc(40);
   const bitmap = img.bitmap;
   const size = bitmap.data.length;
@@ -92,7 +92,7 @@ function getBmpInfoHeader(img, compressionMode) {
   // ...Even if the AND mask is not supplied,
   // if the image is in Windows BMP format,
   // the BMP header must still specify a doubled height.
-  const height = compressionMode === 0 ? width * 2 : width;
+  const height = width * 2;
   const bpp = 32;
 
   buf.writeUInt32LE(40, 0); // The size of this header (40 bytes)
@@ -100,7 +100,7 @@ function getBmpInfoHeader(img, compressionMode) {
   buf.writeInt32LE(height, 8); // The bitmap height in pixels (signed integer)
   buf.writeUInt16LE(1, 12); // The number of color planes (must be 1)
   buf.writeUInt16LE(bpp, 14); // The number of bits per pixel
-  buf.writeUInt32LE(compressionMode, 16); // The compression method being used.
+  buf.writeUInt32LE(0, 16); // The compression method being used.
   buf.writeUInt32LE(size, 20); // The image size.
   buf.writeInt32LE(0, 24); // The horizontal resolution of the image. (signed integer)
   buf.writeInt32LE(0, 28); // The horizontal resolution of the image. (signed integer)
