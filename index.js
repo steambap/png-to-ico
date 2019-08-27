@@ -19,9 +19,7 @@ module.exports = function(filepath) {
         image.resize(256, 256, Jimp.RESIZE_BICUBIC);
       }
 
-      const resizedImages = sizeList.map(targetSize =>
-        image.clone().resize(targetSize, targetSize, Jimp.RESIZE_BICUBIC)
-      );
+      const resizedImages = sizeList.map(targetSize => image.clone().resize(targetSize, targetSize, Jimp.RESIZE_BICUBIC));
 
       return Promise.all(resizedImages.concat(image));
     })
