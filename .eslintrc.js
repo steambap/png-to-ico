@@ -4,7 +4,7 @@ module.exports = {
 		mocha: true
 	},
 	rules: {
-		indent: ["error", 2],
+		indent: ["error", "tab"],
 		quotes: ["error", "double"]
 	}
 };

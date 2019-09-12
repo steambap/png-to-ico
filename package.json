@@ -42,9 +42,9 @@
     "minimist": "^1.2.0"
   },
   "devDependencies": {
-    "babel-eslint": "^10.0.2",
-    "eslint": "^6.2.2",
-    "eslint-config-alloy": "^2.0.5",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.3.0",
+    "eslint-config-alloy": "^3.0.0",
     "mocha": "^6.1.4"
   }
 }
