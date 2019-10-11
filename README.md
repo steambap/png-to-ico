@@ -1,6 +1,6 @@
 # png-to-ico
 
-[![Build Status](https://travis-ci.org/steambap/png-to-ico.svg?branch=master)](https://travis-ci.org/steambap/png-to-ico)
+[![Build Status](https://github.com/steambap/png-to-ico/workflows/CI/badge.svg)](https://github.com/steambap/png-to-ico/actions?workflow=CI)
 
 > convert png to windows ico format
 
