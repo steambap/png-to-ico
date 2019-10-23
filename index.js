@@ -74,7 +74,7 @@ function getDir(img, offset) {
 	buf.writeUInt8(height, 1); // Specifies image height in pixels.
 	buf.writeUInt8(0, 2); // Should be 0 if the image does not use a color palette.
 	buf.writeUInt8(0, 3); // Reserved. Should be 0.
-	buf.writeUInt16LE(0, 4); // Specifies color planes. Should be 0 or 1.
+	buf.writeUInt16LE(1, 4); // Specifies color planes. Should be 0 or 1.
 	buf.writeUInt16LE(bpp, 6); // Specifies bits per pixel.
 	buf.writeUInt32LE(size, 8); // Specifies the size of the image's data in bytes
 	buf.writeUInt32LE(offset, 12); // Specifies the offset of BMP or PNG data from the beginning of the ICO/CUR file
@@ -86,7 +86,6 @@ function getDir(img, offset) {
 function getBmpInfoHeader(img) {
 	const buf = Buffer.alloc(40);
 	const bitmap = img.bitmap;
-	const size = bitmap.data.length;
 	const width = bitmap.width;
 	// https://en.wikipedia.org/wiki/ICO_(file_format)
 	// ...Even if the AND mask is not supplied,
@@ -101,9 +100,9 @@ function getBmpInfoHeader(img) {
 	buf.writeUInt16LE(1, 12); // The number of color planes (must be 1)
 	buf.writeUInt16LE(bpp, 14); // The number of bits per pixel
 	buf.writeUInt32LE(0, 16); // The compression method being used.
-	buf.writeUInt32LE(size, 20); // The image size.
+	buf.writeUInt32LE(0, 20); // The image size.
 	buf.writeInt32LE(0, 24); // The horizontal resolution of the image. (signed integer)
-	buf.writeInt32LE(0, 28); // The horizontal resolution of the image. (signed integer)
+	buf.writeInt32LE(0, 28); // The vertical resolution of the image. (signed integer)
 	buf.writeUInt32LE(0, 32); // The number of colors in the color palette, or 0 to default to 2n
 	buf.writeUInt32LE(0, 36); // The number of important colors used, or 0 when every color is important; generally ignored.
 
@@ -116,28 +115,55 @@ function getBmpInfoHeader(img) {
 function getDib(img) {
 	const bitmap = img.bitmap;
 	const size = bitmap.data.length;
-	const buf = Buffer.alloc(size);
 	const width = bitmap.width;
 	const height = width;
-	const lowerLeftPos = (height - 1) * width * 4;
-
-	for (let x = 0; x < width; x++) {
-		for (let y = 0; y < height; y++) {
+	const andMapRow = getRowStride(width);
+	const andMapSize = andMapRow * height;
+	const buf = Buffer.alloc(size + andMapSize);
+	// xor map
+	for (let y = 0; y < height; y++) {
+		for (let x = 0; x < width; x++) {
 			const pxColor = img.getPixelColor(x, y);
 
 			const r = (pxColor >> 24) & 255;
 			const g = (pxColor >> 16) & 255;
 			const b = (pxColor >> 8) & 255;
 			const a = pxColor & 255;
+			const newColor = b | (g << 8) | (r << 16) | (a << 24);
 
-			const bmpPos = lowerLeftPos - y * width * 4 + x * 4;
+			const pos = ((height - y - 1) * width + x) * 4;
 
-			buf.writeUInt8(b, bmpPos);
-			buf.writeUInt8(g, bmpPos + 1);
-			buf.writeUInt8(r, bmpPos + 2);
-			buf.writeUInt8(a, bmpPos + 3);
+			buf.writeInt32LE(newColor, pos);
+		}
+	}
+
+	// and map. It's padded out to 32 bits per line
+	for (let y = 0; y < height; y++) {
+		for (let x = 0; x < width; x++) {
+			const pxColor = img.getPixelColor(x, y);
+			const alpha = (pxColor & 255) > 0 ? 0 : 1;
+			const bitNum = (height - y - 1) * width + x;
+			// width per line in multiples of 32 bits
+			const width32 =
+				width % 32 === 0 ? Math.floor(width / 32) : Math.floor(width / 32) + 1;
+
+			const line = Math.floor(bitNum / width);
+			const offset = Math.floor(bitNum % width);
+			const bitVal = alpha & 0x00000001;
+
+			const pos = size + line * width32 * 4 + Math.floor(offset / 8) - 1;
+			const newVal = buf.readUInt8(pos) | (bitVal << (7 - (offset % 8)));
+			buf.writeUInt8(newVal, offset);
 		}
 	}
 
 	return buf;
+}
+
+function getRowStride(width) {
+	if (width % 32 === 0) {
+		return width / 8;
+	} else {
+		return 4 * (Math.floor(width / 32) + 1);
+	}
 }
