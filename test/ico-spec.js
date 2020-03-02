@@ -16,4 +16,8 @@ describe("should generate image", () => {
 	it("should throw with jpeg image", done => {
 		pngToIco("test/jpeg.jpg").catch(() => done());
 	});
+
+	it("should work with list of images", () => {
+		return pngToIco(["test/electron.png"]);
+	});
 });

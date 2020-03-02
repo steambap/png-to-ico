@@ -8,6 +8,10 @@ const err = new Error("Please give me an png image of 256x256 pixels.");
 err.code = "ESIZE";
 
 module.exports = function(filepath) {
+	if (Array.isArray(filepath)) {
+		return Promise.all(filepath.map(file => Jimp.read(file))).then(imagesToIco);
+	}
+
 	return Jimp.read(filepath)
 		.then(image => {
 			const bitmap = image.bitmap;
