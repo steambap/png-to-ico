@@ -39,14 +39,14 @@
   },
   "homepage": "https://github.com/steambap/png-to-ico#readme",
   "dependencies": {
-    "@types/node": "^14.0.19",
+    "@types/node": "^14.0.27",
     "jimp": "^0.14.0",
     "minimist": "^1.2.5"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.4.0",
+    "eslint": "^7.6.0",
     "eslint-config-alloy": "^3.7.2",
-    "mocha": "^8.0.1"
+    "mocha": "^8.1.1"
   }
 }
