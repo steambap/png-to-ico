@@ -31,6 +31,14 @@ pngToIco('electron.png')
   .catch(console.error);
 ```
 
+If you want to control what sizes should be in the icon file, pass an array of files:
+```JavaScript
+pngToIco(['electron16x16.png', 'electron32x32.png'])
+  .then(buf => {
+    fs.writeFileSync('app.ico', buf);
+  });
+```
+
 ## Why use png-to-ico?
 When I work on an electron project, it's always a nightmare to create ico for windows.  
 There're so many options out there like apps that make icon for you, photoshop plugin. But none of them satisfy me.  
