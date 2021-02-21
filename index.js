@@ -145,6 +145,7 @@ function getDib(img) {
 	for (let y = 0; y < height; y++) {
 		for (let x = 0; x < width; x++) {
 			const pxColor = img.getPixelColor(x, y);
+			// TODO make threshhold configurable
 			const alpha = (pxColor & 255) > 0 ? 0 : 1;
 			const bitNum = (height - y - 1) * width + x;
 			// width per line in multiples of 32 bits
@@ -155,9 +156,9 @@ function getDib(img) {
 			const offset = Math.floor(bitNum % width);
 			const bitVal = alpha & 0x00000001;
 
-			const pos = size + line * width32 * 4 + Math.floor(offset / 8) - 1;
+			const pos = size + line * width32 * 4 + Math.floor(offset / 8);
 			const newVal = buf.readUInt8(pos) | (bitVal << (7 - (offset % 8)));
-			buf.writeUInt8(newVal, offset);
+			buf.writeUInt8(newVal, pos);
 		}
 	}
 
