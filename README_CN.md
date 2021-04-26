@@ -28,6 +28,14 @@ pngToIco('electron.png')
 	.catch(console.error);
 ```
 
+如果你想要自己定义icon文件中每个BMP文件的大小, 那么参数可以直接传数组:
+```JavaScript
+pngToIco(['electron16x16.png', 'electron32x32.png'])
+  .then(buf => {
+    fs.writeFileSync('app.ico', buf);
+  });
+```
+
 ## 为什么使用 png-to-ico?
 给基于 electron 的程序生成图标没有什么好用的工具，大多数工具只给你转一种大小的图标。  
 这样就会经常出现大图标模糊或者 electron 程序运行时左上角的图标还是默认的无图标的情况。
