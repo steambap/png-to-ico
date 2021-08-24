@@ -1,3 +1,4 @@
+const fs = require("fs");
 const pngToIco = require("../");
 
 describe("should generate image", () => {
@@ -11,6 +12,17 @@ describe("should generate image", () => {
 
 	it("should work with sizes other than 256x256", () => {
 		return pngToIco("test/512x512.png");
+	});
+
+	it("should have the same buffer", done => {
+		pngToIco("test/512x512.png").then(buf => {
+			const icoBuf = fs.readFileSync("test/result.ico");
+			if (icoBuf.equals(buf)) {
+				done();
+			} else {
+				done(new Error("buffs are not equal"));
+			}
+		});
 	});
 
 	it("should throw with jpeg image", done => {
