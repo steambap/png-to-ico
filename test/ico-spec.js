@@ -16,7 +16,7 @@ describe("should generate image", () => {
 
 	it("should have the same buffer", done => {
 		pngToIco("test/512x512.png").then(buf => {
-			const icoBuf = fs.readFileSync("test/result.ico");
+			const icoBuf = fs.readFileSync("test/test.ico");
 			if (icoBuf.equals(buf)) {
 				done();
 			} else {
