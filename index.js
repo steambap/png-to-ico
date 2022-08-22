@@ -45,11 +45,13 @@ function imagesToIco(images) {
 		const bmpInfoHeader = getBmpInfoHeader(img);
 		const dib = getDib(img);
 
+		len += dir.length + bmpInfoHeader.length + dib.length;
+		const newSize = bmpInfoHeader.length + dib.length;
+		offset += newSize;
+
+		dir.writeUInt32LE(newSize, 8);
 		headerAndIconDir.push(dir);
 		imageDataArr.push(bmpInfoHeader, dib);
-
-		len += dir.length + bmpInfoHeader.length + dib.length;
-		offset += bmpInfoHeader.length + dib.length;
 	});
 
 	return Buffer.concat(headerAndIconDir.concat(imageDataArr), len);
@@ -69,7 +71,6 @@ function getHeader(numOfImages) {
 function getDir(img, offset) {
 	const buf = Buffer.alloc(16);
 	const bitmap = img.bitmap;
-	const size = bitmap.data.length + 40;
 	const width = bitmap.width >= 256 ? 0 : bitmap.width;
 	const height = width;
 	const bpp = 32;
@@ -80,7 +81,7 @@ function getDir(img, offset) {
 	buf.writeUInt8(0, 3); // Reserved. Should be 0.
 	buf.writeUInt16LE(1, 4); // Specifies color planes. Should be 0 or 1.
 	buf.writeUInt16LE(bpp, 6); // Specifies bits per pixel.
-	buf.writeUInt32LE(size, 8); // Specifies the size of the image's data in bytes
+	buf.writeUInt32LE(0, 8); // Specifies the size of the image's data in bytes
 	buf.writeUInt32LE(offset, 12); // Specifies the offset of BMP or PNG data from the beginning of the ICO/CUR file
 
 	return buf;
