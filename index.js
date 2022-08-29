@@ -1,5 +1,5 @@
 /* eslint-disable no-mixed-operators */
-const Jimp = require("jimp");
+const { readPNG, resize } = require("./lib/png");
 
 // http://fileformats.wikia.com/wiki/Icon
 // the correct sizes are 256x256, 48x48, 32x32, 16x16
@@ -9,28 +9,30 @@ err.code = "ESIZE";
 
 module.exports = function(filepath) {
 	if (Array.isArray(filepath)) {
-		return Promise.all(filepath.map(file => Jimp.read(file))).then(imagesToIco);
+		return Promise.all(
+			filepath.map(file => readPNG(file))).then(imagesToIco);
 	}
 
-	return Jimp.read(filepath)
-		.then(image => {
-			const bitmap = image.bitmap;
-			const size = bitmap.width;
-			if (image._originalMime !== Jimp.MIME_PNG || size !== bitmap.height) {
+	return readPNG(filepath)
+		.then(png => {
+			if (png.width !== png.height) {
 				throw err;
 			}
-			if (size !== 256) {
-				image.resize(256, 256, Jimp.RESIZE_BICUBIC);
-			}
 
-			const resizedImages = sizeList.map(targetSize =>
-				image.clone().resize(targetSize, targetSize, Jimp.RESIZE_BICUBIC)
+			const image = png.width !== 256
+				? resize(png, 256, 256)
+				: png
+			;
+
+			const resizedImages = sizeList.map(
+				targetSize => resize(image, targetSize, targetSize)
 			);
-
-			return Promise.all(resizedImages.concat(image));
+			
+			return resizedImages.concat(image);
 		})
-		.then(imagesToIco);
-};
+		.then(imagesToIco)
+	;
+}
 
 function imagesToIco(images) {
 	const header = getHeader(images.length);
@@ -70,7 +72,7 @@ function getHeader(numOfImages) {
 
 function getDir(img, offset) {
 	const buf = Buffer.alloc(16);
-	const bitmap = img.bitmap;
+	const bitmap = img //.bitmap;
 	const width = bitmap.width >= 256 ? 0 : bitmap.width;
 	const height = width;
 	const bpp = 32;
@@ -90,7 +92,7 @@ function getDir(img, offset) {
 // https://en.wikipedia.org/wiki/BMP_file_format
 function getBmpInfoHeader(img) {
 	const buf = Buffer.alloc(40);
-	const bitmap = img.bitmap;
+	const bitmap = img; //.bitmap;
 	const width = bitmap.width;
 	// https://en.wikipedia.org/wiki/ICO_(file_format)
 	// ...Even if the AND mask is not supplied,
@@ -118,7 +120,7 @@ function getBmpInfoHeader(img) {
 // Note that the bitmap data starts with the lower left hand corner of the image.
 // blue green red alpha in order
 function getDib(img) {
-	const bitmap = img.bitmap;
+	const bitmap = img; //.bitmap;
 	const size = bitmap.data.length;
 	const width = bitmap.width;
 	const height = width;
@@ -128,7 +130,7 @@ function getDib(img) {
 	// xor map
 	for (let y = 0; y < height; y++) {
 		for (let x = 0; x < width; x++) {
-			const pxColor = img.getPixelColor(x, y);
+			const pxColor = getPixelColor(img, x, y);
 
 			const r = (pxColor >> 24) & 255;
 			const g = (pxColor >> 16) & 255;
@@ -145,7 +147,7 @@ function getDib(img) {
 	// and map. It's padded out to 32 bits per line
 	for (let y = 0; y < height; y++) {
 		for (let x = 0; x < width; x++) {
-			const pxColor = img.getPixelColor(x, y);
+			const pxColor = getPixelColor(img, x, y);
 			// TODO make threshhold configurable
 			const alpha = (pxColor & 255) > 0 ? 0 : 1;
 			const bitNum = (height - y - 1) * width + x;
@@ -172,4 +174,19 @@ function getRowStride(width) {
 	} else {
 		return 4 * (Math.floor(width / 32) + 1);
 	}
+}
+
+function getPixelColor(png, x, y) {
+	let xi = x < 0 ? 0: x;
+	let yi = y < 0 ? 0: y;
+
+	if (x >= png.width) xi = png.width - 1;
+	if (y >= png.height) yi = png.height - 1;
+
+	const i = (xi < 0 || xi >= png.width) || (yi < 0 || yi >= png.height)
+		? -1
+		: (png.width * yi + xi) << 2
+	;
+		
+	return png.data.readUInt32BE(i);
 }
