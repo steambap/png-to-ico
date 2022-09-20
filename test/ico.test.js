@@ -13,6 +13,12 @@ test("should work with sizes other than 256x256", () => {
 	return pngToIco("test/512x512.png");
 });
 
+test("should work with buffer", () => {
+	const buf = fs.readFileSync("test/512x512.png");
+
+	return pngToIco(buf);
+});
+
 test("should have the same buffer", (done) => {
 	pngToIco("test/512x512.png").then((buf) => {
 		const icoBuf = fs.readFileSync("test/test.ico");
