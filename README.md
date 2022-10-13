@@ -44,8 +44,8 @@ When I work on an electron project, it's always a nightmare to create ico for wi
 There're so many options out there like apps that make icon for you, photoshop plugin. But none of them satisfy me.  
 I want a JavaScript module that works like the .NET ico tool, which automatically generate different sizes for ico file.  
 
-Based on [jimp](https://github.com/oliver-moran/jimp):
- An image processing library written entirely in JavaScript for Node, with zero external or native dependencies.  
+Based on [pngjs](https://github.com/lukeapage/pngjs):
+Simple PNG encoder/decoder library written entirely in JavaScript for Node, with zero external or native dependencies.  
 In other words, png-to-ico is written purely in JavaScript, which is great for windows user.  
 
 ## license

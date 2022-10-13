@@ -40,7 +40,7 @@ pngToIco(['electron16x16.png', 'electron32x32.png'])
 给基于 electron 的程序生成图标没有什么好用的工具，大多数工具只给你转一种大小的图标。  
 这样就会经常出现大图标模糊或者 electron 程序运行时左上角的图标还是默认的无图标的情况。
 我想拥有一个像 visual studio 里面给 .NET 程序打包工具那样会自动生成各种大小的图标工具，而且必须是 JS 的。  
-然后我发现了 [jimp](https://github.com/oliver-moran/jimp)，这是一个没有 c++ 模块依赖的 JS 图形处理库，我基于这个库编写了 png-to-ico，这样作为 windows 用户的我再也不用和 c++ 模块做斗争了。  
+所以就有了基于 [pngjs](https://github.com/lukeapage/pngjs) 这个没有 c++ 模块依赖的 JS 图形处理库编写的 png-to-ico，这样作为 windows 用户的我再也不用和 c++ 模块做斗争了。
 
 ## license
 [MIT](LICENSE)
