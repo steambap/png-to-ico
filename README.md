@@ -19,6 +19,12 @@ npm script:
 png-to-ico electron.png > app.ico
 ```
 
+npx script:
+```
+npx png-to-ico -- electron.png > app.ico
+```
+This way you can run the script without installing the package into your project
+
 programming usage:
 ```JavaScript
 const fs = require('fs');
