@@ -1,39 +1,35 @@
 const fs = require("fs");
+const { test } = require("node:test");
+const assert = require("node:assert");
 const pngToIco = require("../");
 
-test("should work with transparency", () => {
-	return pngToIco("test/electron.png");
+test("should work with transparency", async () => {
+	await pngToIco("test/electron.png");
 });
 
-test("should throw when the input image is not square", (done) => {
-	pngToIco("test/150x50.png").catch(() => done());
+test("should throw when the input image is not square", async () => {
+	await assert.rejects(pngToIco("test/150x50.png"));
 });
 
-test("should work with sizes other than 256x256", () => {
-	return pngToIco("test/512x512.png");
+test("should work with sizes other than 256x256", async () => {
+	await pngToIco("test/512x512.png");
 });
 
-test("should work with buffer", () => {
+test("should work with buffer", async () => {
 	const buf = fs.readFileSync("test/512x512.png");
-
-	return pngToIco(buf);
+	await pngToIco(buf);
 });
 
-test("should have the same buffer", (done) => {
-	pngToIco("test/512x512.png").then((buf) => {
-		const icoBuf = fs.readFileSync("test/test.ico");
-		if (icoBuf.equals(buf)) {
-			done();
-		} else {
-			done(new Error("buffs are not equal"));
-		}
-	});
+test("should have the same buffer", async () => {
+	const buf = await pngToIco("test/512x512.png");
+	const icoBuf = fs.readFileSync("test/test.ico");
+	assert.ok(icoBuf.equals(buf), "buffs are not equal");
 });
 
-test("should throw with jpeg image", (done) => {
-	pngToIco("test/jpeg.jpg").catch(() => done());
+test("should throw with jpeg image", async () => {
+	await assert.rejects(pngToIco("test/jpeg.jpg"));
 });
 
-test("should work with list of images", () => {
-	return pngToIco(["test/electron.png"]);
+test("should work with list of images", async () => {
+	await pngToIco(["test/electron.png"]);
 });
