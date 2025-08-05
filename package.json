@@ -17,7 +17,7 @@
   ],
   "typings": "index.d.ts",
   "scripts": {
-    "test": "jest test/*.test.js",
+    "test": "node --test",
     "lint": "eslint ."
   },
   "repository": {

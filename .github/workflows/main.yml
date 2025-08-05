@@ -19,4 +19,4 @@ jobs:
           version: 9
           run_install: true
       - name: run tests
-        run: npm test
+        run: node --test
