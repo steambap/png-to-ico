@@ -27,22 +27,21 @@ This way you can run the script without installing the package into your project
 
 programming usage:
 ```JavaScript
-const fs = require('fs');
-const pngToIco = require('png-to-ico');
+import fs from 'fs';
+import pngToIco from 'png-to-ico';
 
-pngToIco('electron.png')
-  .then(buf => {
-    fs.writeFileSync('app.ico', buf);
-  })
-  .catch(console.error);
+try {
+  const buf = await pngToIco('electron.png');
+  fs.writeFileSync('app.ico', buf);
+} catch (error) {
+  console.error(error);
+}
 ```
 
 If you want to control what sizes should be in the icon file, pass an array of files:
 ```JavaScript
-pngToIco(['electron16x16.png', 'electron32x32.png'])
-  .then(buf => {
-    fs.writeFileSync('app.ico', buf);
-  });
+const buf = await pngToIco(['electron16x16.png', 'electron32x32.png']);
+fs.writeFileSync('app.ico', buf);
 ```
 
 ## Why use png-to-ico?

@@ -1,5 +1,5 @@
 /* eslint-disable no-mixed-operators */
-const { readPNG, resize } = require("./lib/png");
+import { readPNG, resize } from "./lib/png.js";
 
 // http://fileformats.wikia.com/wiki/Icon
 // the correct sizes are 256x256, 48x48, 32x32, 16x16
@@ -7,34 +7,32 @@ const sizeList = [48, 32, 16];
 const err = new Error("Please give me a square PNG image.");
 err.code = "ESIZE";
 
-module.exports = function(filepath) {
+export default async function(filepath, options = {}) {
 	if (Array.isArray(filepath)) {
-		return Promise.all(
-			filepath.map(file => readPNG(file))).then(imagesToIco);
+		const images = await Promise.all(
+			filepath.map(file => readPNG(file)));
+		return imagesToIco(images);
 	}
 
-	return readPNG(filepath)
-		.then(png => {
-			if (png.width !== png.height) {
-				throw err;
-			}
+	const png = await readPNG(filepath);
+	if (png.width !== png.height) {
+		throw err;
+	}
 
-			const image = png.width !== 256
-				? resize(png, 256, 256)
-				: png
-			;
-
-			const resizedImages = sizeList.map(
-				targetSize => resize(image, targetSize, targetSize)
-			);
-			
-			return resizedImages.concat(image);
-		})
-		.then(imagesToIco)
+	const image = png.width !== 256
+		? resize(png, 256, 256, options.interpolation)
+		: png
 	;
+
+	const resizedImages = sizeList.map(
+		targetSize => resize(image, targetSize, targetSize, options.interpolation)
+	);
+	
+	const images = resizedImages.concat(image);
+	return imagesToIco(images);
 }
 
-function imagesToIco(images) {
+export function imagesToIco(images) {
 	const header = getHeader(images.length);
 	const headerAndIconDir = [header];
 	const imageDataArr = [];

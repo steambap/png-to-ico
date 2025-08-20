@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-const minimist = require("minimist");
-const pkg = require("../package.json");
-const pngToIco = require("../");
+import minimist from "minimist";
+import pkg from "../package.json" with { type: 'json' };
+import pngToIco from "../index.js";
 
 const argv = minimist(process.argv.slice(2));
 

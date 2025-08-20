@@ -1,7 +1,7 @@
-const fs = require("fs");
-const { test } = require("node:test");
-const assert = require("node:assert");
-const pngToIco = require("../");
+import fs from "fs";
+import { test } from "node:test";
+import assert from "node:assert";
+import pngToIco from "../index.js";
 
 test("should work with transparency", async () => {
 	await pngToIco("test/electron.png");
@@ -32,4 +32,8 @@ test("should throw with jpeg image", async () => {
 
 test("should work with list of images", async () => {
 	await pngToIco(["test/electron.png"]);
+});
+
+test("should work with interpolation", async () => {
+	await pngToIco("test/512x512.png", { interpolation: "nearestNeighbor" });
 });

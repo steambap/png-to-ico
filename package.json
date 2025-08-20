@@ -2,9 +2,10 @@
   "name": "png-to-ico",
   "version": "2.1.8",
   "description": "convert png to windows ico format",
+  "type": "module",
   "main": "index.js",
   "engines": {
-    "node": ">=8"
+    "node": ">=20"
   },
   "bin": {
     "png-to-ico": "bin/cli.js"
