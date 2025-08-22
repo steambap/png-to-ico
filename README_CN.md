@@ -18,22 +18,25 @@ png-to-ico electron.png > app.ico
 
 在 node.js 程序中使用:
 ```JavaScript
-const fs = require('fs');
-const pngToIco = require('png-to-ico');
+import fs from 'fs';
+import pngToIco from 'png-to-ico';
 
-pngToIco('electron.png')
-	.then(buf => {
-		fs.writeFileSync('app.ico', buf);
-	})
-	.catch(console.error);
+try {
+	const buf = await pngToIco('electron.png');
+	fs.writeFileSync('app.ico', buf);
+} catch (error) {
+	console.error(error);
+}
 ```
 
 如果你想要自己定义icon文件中每个BMP文件的大小, 那么参数可以直接传数组:
 ```JavaScript
-pngToIco(['electron16x16.png', 'electron32x32.png'])
-  .then(buf => {
-    fs.writeFileSync('app.ico', buf);
-  });
+try {
+  const buf = await pngToIco(['electron16x16.png', 'electron32x32.png']);
+  fs.writeFileSync('app.ico', buf);
+} catch (error) {
+  console.error(error);
+}
 ```
 
 ## 为什么使用 png-to-ico?
