@@ -39,3 +39,5 @@ jspm_packages
 
 # Only apps need lock file
 yarn.lock
+
+.pnpm-store

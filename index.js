@@ -1,4 +1,3 @@
-/* eslint-disable no-mixed-operators */
 import { readPNG, resize } from "./lib/png.js";
 
 // http://fileformats.wikia.com/wiki/Icon
