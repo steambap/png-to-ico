@@ -2,6 +2,7 @@ import fs from "fs";
 import { test } from "node:test";
 import assert from "node:assert";
 import pngToIco from "../index.js";
+import { readPNG } from "../lib/png.js";
 
 test("should work with transparency", async () => {
 	await pngToIco("test/electron.png");
@@ -36,4 +37,22 @@ test("should work with list of images", async () => {
 
 test("should work with interpolation", async () => {
 	await pngToIco("test/512x512.png", { interpolation: "nearestNeighbor" });
+});
+
+test("should throw clear error for unsupported interpolation", async () => {
+	await assert.rejects(
+		pngToIco("test/512x512.png", { interpolation: "missingInterpolation" }),
+		/Unsupported interpolation "missingInterpolation"/
+	);
+});
+
+test("should reject invalid buffer with safe message and original cause", async () => {
+	await assert.rejects(
+		readPNG(Buffer.from("not png")),
+		err => {
+			assert.strictEqual(err.message, "Buffer input is not a valid PNG file.");
+			assert.ok(err.cause instanceof Error);
+			return true;
+		}
+	);
 });

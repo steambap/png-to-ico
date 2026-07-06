@@ -1,7 +1,14 @@
 /// <reference types="node" />
 
+export type PngToIcoInterpolation =
+	| "nearestNeighbor"
+	| "bilinearInterpolation"
+	| "bicubicInterpolation"
+	| "hermiteInterpolation"
+	| "bezierInterpolation";
+
 export interface PngToIcoOptions {
-	interpolation?: any;
+	interpolation?: PngToIcoInterpolation;
 }
 
 declare function pngToIco(filepath: string | Buffer | any[], options?: PngToIcoOptions): Promise<Buffer>;
